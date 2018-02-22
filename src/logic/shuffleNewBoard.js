@@ -1,4 +1,4 @@
-import { FLAG_EMPTY, FLAG_BOMB, FLAG_MAYBE } from "../constants";
+import { FLAG_EMPTY } from "../constants";
 import Board from "./Board";
 
 const E = {
@@ -14,17 +14,6 @@ const B = {
   nearByBombs: undefined,
   flag: FLAG_EMPTY
 };
-
-const HARDCODED_SHUFFLE = [
-  [E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E],
-  [E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, B, E, E, E, E],
-  [E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E],
-  [E, E, B, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, B, E, E, E, E],
-  [E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, B, E, E, E, E],
-  [E, E, E, E, E, E, E, E, E, E, E, E, E, E, B, E, E, E, E, B, E, E, E, E],
-  [E, E, E, E, E, E, E, B, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E],
-  [E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, B, E, E, E, E]
-];
 
 function buildRandomCell(bombRatio) {
   const rnd = Math.random();
@@ -59,7 +48,7 @@ export default function(level) {
     case "hard":
       return buildBoard(20, 20, 0.1);
     case "medium":
-      return buildBoard(15, 15, 0.5);
+      return buildBoard(15, 15, 0.1);
     default:
       return buildBoard(12, 12, 0.1);
   }

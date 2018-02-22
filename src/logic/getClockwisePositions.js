@@ -16,5 +16,5 @@ function* yieldPositions(board, centerX, centerY) {
 }
 
 export default function(board, x, y) {
-  return Array.from(yieldPositions(board, x, y)).filter(p => p != undefined);
+  return Array.from(yieldPositions(board, x, y)).filter(p => p !== undefined);
 }

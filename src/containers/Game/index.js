@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 
 import { Cell, Face, Timer, Label } from "../../components";
-import { Board, shuffleNewBoard } from "../../logic";
+import { shuffleNewBoard } from "../../logic";
 
 import * as styles from "./styles";
 

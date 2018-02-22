@@ -1,12 +1,9 @@
 import React, { Component } from "react";
-import FontAwesome from "react-fontawesome";
 
 export default class Face extends Component {
   renderContent(icon) {
     return (
-      
-        <span className={`fa fa-${icon} fa-4x`} style={{ color: "orange" }} />
-      
+      <span className={`fa fa-${icon} fa-4x`} style={{ color: "orange" }} />
     );
   }
   render() {

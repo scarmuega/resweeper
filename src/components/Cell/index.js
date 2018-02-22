@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import FontAwesome from "react-fontawesome";
 
 import { FLAG_BOMB, FLAG_MAYBE, RANDOM_COLORS } from "../../constants";
 
@@ -33,7 +32,8 @@ export default class Cell extends Component {
   }
 
   renderIcon(icon, color) {
-    return <FontAwesome name={icon} style={{ color }} />;
+    return <span className={`fa fa-${icon}`} style={{ color }} />
+    //return <FontAwesome name={icon} style={{ color }} />;
   }
 
   renderHidden() {
