@@ -1,41 +1,19 @@
 import getClockwisePositions from "./getClockwisePositions";
 import { FLAG_EMPTY, FLAG_BOMB, FLAG_MAYBE } from '../constants';
 
-const E = {
-  isDisclosed: false,
-  isBomb: false,
-  nearByBombs: undefined,
-  flag: FLAG_EMPTY
-};
-
-const B = {
-  isDisclosed: false,
-  isBomb: true,
-  nearByBombs: undefined,
-  flag: FLAG_EMPTY
-};
-
-const HARDCODED_SHUFFLE = [
-  [E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E],
-  [E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, B, E, E, E, E],
-  [E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E],
-  [E, E, B, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, B, E, E, E, E],
-  [E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, B, E, E, E, E],
-  [E, E, E, E, E, E, E, E, E, E, E, E, E, E, B, E, E, E, E, B, E, E, E, E],
-  [E, E, E, E, E, E, E, B, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E],
-  [E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, B, E, E, E, E]
-];
-
 export default class Board {
   data = null;
+  bombCount = null;
   isGameOver = false;
+  isWinner = false;
 
   constructor(data) {
-    this.data = data || HARDCODED_SHUFFLE;
+    this.data = data;
   }
 
   initialize() {
     this.forEachCell((x, y) => this.computeNearByBombs(x, y));
+    this.bombCount = this.countBombs();
   }
 
   computeNearByBombs(x, y) {
@@ -56,7 +34,7 @@ export default class Board {
 
   forEachCell(action) {
     this.data.forEach((row, y) => {
-      row.forEach((cell, x) => action(x, y));
+      row.forEach((cell, x) => action(x, y, cell));
     });
   }
 
@@ -74,10 +52,18 @@ export default class Board {
   revealSurroundings(x, y) {
     const positions = getClockwisePositions(this, x, y);
 
+    const hasBombs = positions
+        .filter(({ x, y }) => {
+            const cell = this.getCellData(x, y);
+            return cell && cell.isBomb;
+        }).length > 0;
+
+    if (hasBombs) return;
+
     positions
       .filter(({ x, y }) => {
         const cell = this.getCellData(x, y);
-        return cell && !cell.isBomb && !cell.isDisclosed && !cell.flag;
+        return cell && !cell.isDisclosed && !cell.flag;
       })
       .forEach(({ x, y }) => this.discloseCell(x, y));
   }
@@ -86,10 +72,6 @@ export default class Board {
     this.mutateCellData(x, y, oldData => {
       if (oldData.isDisclosed) return oldData;
 
-      if (oldData.isBomb) {
-        this.isGameOver = true;
-      }
-
       return {
         ...oldData,
         isDisclosed: true
@@ -97,6 +79,7 @@ export default class Board {
     });
 
     this.revealSurroundings(x, y);
+    this.evaluateStatus();
   }
 
   flagCell(x, y) {
@@ -112,6 +95,8 @@ export default class Board {
           return { ...oldData, flag: FLAG_BOMB };
       }
     });
+
+    this.evaluateStatus();
   }
 
   isInside(x, y) {
@@ -125,6 +110,51 @@ export default class Board {
 
   getSize(board) {
     return { width: this.data[0].length, height: this.data.length };
+  }
+
+  countBombs() {
+      let count = 0;
+      this.forEachCell((x, y, cell) => {
+          if (cell.isBomb) count += 1;
+      });
+      return count;
+  }
+
+  countCorrectFlags() {
+    let count = 0;
+    this.forEachCell((x, y, cell) => {
+        if (!cell.isDisclosed && cell.flag === FLAG_BOMB && cell.isBomb) count += 1;
+    });
+    return count;
+  }
+
+  countDisclosedBombs() {
+    let count = 0;
+    this.forEachCell((x, y, cell) => {
+        if (cell.isDisclosed  && cell.flag === FLAG_EMPTY && cell.isBomb) count += 1;
+    });
+    return count;
+  }
+
+  evaluateStatus() {
+    const disclosedBombs = this.countDisclosedBombs();
+    if (disclosedBombs > 0) {
+        this.isGameOver = true;
+        this.isWinner = false;
+        return;
+    }
+
+    const correctFlags = this.countCorrectFlags();
+    const bombCount = this.countBombs();
+    
+    if (correctFlags === bombCount) {
+        this.isGameOver = true;
+        this.isWinner = true;
+        return;
+    }
+
+    this.isGameOver = false;
+    this.isWinner = false;
   }
 
   clone() {
