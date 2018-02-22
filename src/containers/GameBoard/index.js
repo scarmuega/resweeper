@@ -13,19 +13,24 @@ export default class GameBoard extends Component {
     board: BOARD
   };
 
-  handleEndGame() {
-    alert("ended");
-  }
-
-  handleShouldDisclose = async (cellData, x, y) => {
+  handleShouldDisclose = async (x, y) => {
     const { board } = this.state;
 
     //CODE REVIEW: it's important that all of our state is inmutable, so we
     //need to clone the board instead of manipulating the existig one
     const newBoard = board.clone();
-
     newBoard.discloseCell(x, y);
+    await this.setState({ board: newBoard });
+  };
 
+
+  handleShouldFlag = async (x, y) => {
+    const { board } = this.state;
+
+    //CODE REVIEW: it's important that all of our state is inmutable, so we
+    //need to clone the board instead of manipulating the existig one
+    const newBoard = board.clone();
+    newBoard.flagCell(x, y);
     await this.setState({ board: newBoard });
   };
 
@@ -35,7 +40,7 @@ export default class GameBoard extends Component {
   }
 
   renderCell(cellData, rowIndex, cellIndex) {
-    const { isDisclosed, isBomb, nearByBombs } = cellData;
+    const { isDisclosed, isBomb, nearByBombs, flag } = cellData;
 
     //CODE REVIEW: we could use <Cell {...cellData} /> syntax to make it shorter,
     //but it ends up harder for debugging
@@ -45,9 +50,9 @@ export default class GameBoard extends Component {
         isBomb={isBomb}
         isDisclosed={isDisclosed}
         nearByBombs={nearByBombs}
-        onShouldDisclose={() =>
-          this.handleShouldDisclose(cellData, cellIndex, rowIndex)
-        }
+        flag={flag}
+        onShouldDisclose={() => this.handleShouldDisclose(cellIndex, rowIndex)}
+        onShouldFlag={() => this.handleShouldFlag(cellIndex, rowIndex)}
       />
     );
   }

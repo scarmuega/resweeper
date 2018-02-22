@@ -1,16 +1,18 @@
 import getClockwisePositions from "./getClockwisePositions";
+import { FLAG_EMPTY, FLAG_BOMB, FLAG_MAYBE } from '../constants';
 
 const E = {
   isDisclosed: false,
   isBomb: false,
   nearByBombs: undefined,
-  flag: null
+  flag: FLAG_EMPTY
 };
+
 const B = {
   isDisclosed: false,
   isBomb: true,
   nearByBombs: undefined,
-  flag: null
+  flag: FLAG_EMPTY
 };
 
 const HARDCODED_SHUFFLE = [
@@ -43,8 +45,8 @@ export default class Board {
     }).length;
 
     this.mutateCellData(x, y, oldData => ({
-        ...oldData,
-        nearByBombs: bombCount
+      ...oldData,
+      nearByBombs: bombCount
     }));
   }
 
@@ -75,7 +77,7 @@ export default class Board {
     positions
       .filter(({ x, y }) => {
         const cell = this.getCellData(x, y);
-        return cell && !cell.isBomb && !cell.isDisclosed && !cell.nearByBombs;
+        return cell && !cell.isBomb && !cell.isDisclosed && !cell.nearByBombs && !cell.flag;
       })
       .forEach(({ x, y }) => this.discloseCell(x, y));
   }
@@ -95,6 +97,21 @@ export default class Board {
     });
 
     this.revealSurroundings(x, y);
+  }
+
+  flagCell(x, y) {
+    this.mutateCellData(x, y, oldData => {
+      if (oldData.isDisclosed) return oldData;
+
+      switch (oldData.flag) {
+        case FLAG_BOMB:
+          return { ...oldData, flag: FLAG_MAYBE };
+        case FLAG_MAYBE:
+          return { ...oldData, flag: FLAG_EMPTY };
+        default:
+          return { ...oldData, flag: FLAG_BOMB };
+      }
+    });
   }
 
   isInside(x, y) {

@@ -4,23 +4,34 @@ import * as styles from "./styles";
 
 export default class Cell extends Component {
   handleClick = () => {
-    const { isDisclosed, onShouldDisclose } = this.props;
+    const { isDisclosed, flag, onShouldDisclose } = this.props;
 
-    //if it's already disclosed, do nothing
-    if (isDisclosed || !onShouldDisclose) return;
+    //if it's already disclosed or flagged, do nothing
+    if (isDisclosed || flag || !onShouldDisclose) return;
 
     onShouldDisclose();
+  };
+
+  handleContextMenu = ev => {  
+    ev.preventDefault();
+    const { isDisclosed, onShouldFlag } = this.props;
+    
+    //if it's disclosed, do nothing
+    if (isDisclosed || !onShouldFlag) return;
+
+    onShouldFlag();
+    return false;
   };
 
   renderHidden() {
     const { flag } = this.props;
     switch (flag) {
-      case "W":
-        return "W";
-      case "B":
+      case "?":
+        return "?";
+      case "*":
         return "*";
       default:
-        return "?";
+        return "H";
     }
   }
 
@@ -34,7 +45,11 @@ export default class Cell extends Component {
   render() {
     const { isDisclosed } = this.props;
     return (
-      <div style={styles.WRAPPER} onClick={this.handleClick}>
+      <div
+        style={styles.WRAPPER}
+        onClick={this.handleClick}
+        onContextMenu={this.handleContextMenu}
+      >
         {isDisclosed ? this.renderDisclosed() : this.renderHidden()}
       </div>
     );
