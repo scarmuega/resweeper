@@ -5,7 +5,8 @@ export const GRID = {
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    backgroundColor: '#828282'
 }
 
 export const ROW = {

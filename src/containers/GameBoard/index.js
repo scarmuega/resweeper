@@ -23,7 +23,6 @@ export default class GameBoard extends Component {
     await this.setState({ board: newBoard });
   };
 
-
   handleShouldFlag = async (x, y) => {
     const { board } = this.state;
 
@@ -36,10 +35,11 @@ export default class GameBoard extends Component {
 
   renderGameStatus() {
     const { board } = this.state;
-    return <div>{board.gameOver ? "game over" : "[timer running]"}</div>;
+    return <div>{board.isGameOver ? "game over" : "[timer running]"}</div>;
   }
 
   renderCell(cellData, rowIndex, cellIndex) {
+    const { board } = this.state;
     const { isDisclosed, isBomb, nearByBombs, flag } = cellData;
 
     //CODE REVIEW: we could use <Cell {...cellData} /> syntax to make it shorter,
@@ -51,6 +51,7 @@ export default class GameBoard extends Component {
         isDisclosed={isDisclosed}
         nearByBombs={nearByBombs}
         flag={flag}
+        isGameOver={board.isGameOver}
         onShouldDisclose={() => this.handleShouldDisclose(cellIndex, rowIndex)}
         onShouldFlag={() => this.handleShouldFlag(cellIndex, rowIndex)}
       />

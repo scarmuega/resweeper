@@ -20,7 +20,7 @@ const HARDCODED_SHUFFLE = [
   [E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, B, E, E, E, E],
   [E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E],
   [E, E, B, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, B, E, E, E, E],
-  [E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E],
+  [E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, B, E, E, E, E],
   [E, E, E, E, E, E, E, E, E, E, E, E, E, E, B, E, E, E, E, B, E, E, E, E],
   [E, E, E, E, E, E, E, B, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E],
   [E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, E, B, E, E, E, E]
@@ -28,7 +28,7 @@ const HARDCODED_SHUFFLE = [
 
 export default class Board {
   data = null;
-  gameOver = false;
+  isGameOver = false;
 
   constructor(data) {
     this.data = data || HARDCODED_SHUFFLE;
@@ -77,7 +77,7 @@ export default class Board {
     positions
       .filter(({ x, y }) => {
         const cell = this.getCellData(x, y);
-        return cell && !cell.isBomb && !cell.isDisclosed && !cell.nearByBombs && !cell.flag;
+        return cell && !cell.isBomb && !cell.isDisclosed && !cell.flag;
       })
       .forEach(({ x, y }) => this.discloseCell(x, y));
   }
@@ -87,7 +87,7 @@ export default class Board {
       if (oldData.isDisclosed) return oldData;
 
       if (oldData.isBomb) {
-        this.gameOver = true;
+        this.isGameOver = true;
       }
 
       return {
